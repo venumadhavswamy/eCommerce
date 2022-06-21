@@ -2,3 +2,8 @@
 /backend/node_modules
 
 ProjectSteps.txt
+
+/backend/config/config.env
+
+#Testing download
+sample.pdf
