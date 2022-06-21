@@ -8,7 +8,7 @@ const app = express();
 //Config
 dotenv.config({path:'config/config.env'});
 
-app.use('/product',product)
+app.use('/',product)
 
 app.get('/',(req,res)=>{
     res.status(200).send("Welcome");
