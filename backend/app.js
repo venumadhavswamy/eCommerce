@@ -1,5 +1,6 @@
 const express = require('express');
 const dotenv = require('dotenv');
+const connectDB = require('./config/database');
 //Route imports
 const product = require('./routes/producRoute');
 
@@ -8,7 +9,10 @@ const app = express();
 //Config
 dotenv.config({path:'config/config.env'});
 
-app.use('/',product)
+//Connect database
+connectDB(); 
+
+app.use('/',product);
 
 app.get('/',(req,res)=>{
     res.status(200).send("Welcome");
