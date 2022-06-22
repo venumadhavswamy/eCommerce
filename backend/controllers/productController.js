@@ -38,7 +38,38 @@ exports.updateProduct = async (req,res)=>{
             res.status(200).json({success:true,message:"Product updated successfully"});
         }
         else{
-            res.status(500).json({success:false,message:"Product not found"});
+            res.status(404).json({success:false,message:"Product not found"});
+        }
+    }
+    catch(err){
+        res.status(400).json({success:false,message:"Bad request",error:err});
+    }
+}
+
+exports.deleteProduct = async (req,res)=>{
+    try{
+        const product = await Product.findByIdAndDelete(req.params.id);
+        console.log("product",product);
+        if(product){
+            res.status(200).json({success:true,message:"Product deleted successfully"});
+        }
+        else{
+            res.status(404).json({success:false,message:"Product not found"});
+        }
+    }
+    catch(err){
+        res.status(400).json({success:false,message:"Bad request",error:err});
+    }
+}
+
+exports.getProductDetails = async (req,res)=>{
+    try{
+        const product = await Product.findById(req.params.id);
+        if(product){
+            res.status(200).json({success:true,product});
+        }
+        else{
+            res.status(404).json({success:false,message:"Product not found"});
         }
     }
     catch(err){
