@@ -1,5 +1,6 @@
 const express = require('express');
 const dotenv = require('dotenv');
+const bodyParser = require('body-parser');
 const connectDB = require('./config/database');
 //Route imports
 const product = require('./routes/producRoute');
@@ -12,6 +13,10 @@ dotenv.config({path:'config/config.env'});
 //Connect database
 connectDB(); 
 
+//Parse data into json format
+app.use(bodyParser.json());
+
+//Products route
 app.use('/',product);
 
 app.get('/',(req,res)=>{
