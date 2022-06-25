@@ -6,7 +6,7 @@ const connectDB = function (){
             console.log("mongodb connection established");
         })
         .catch((err)=>{
-            console.log(err);
+            console.error("Error:::",err.message);
         });
 }
 

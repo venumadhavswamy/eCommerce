@@ -2,6 +2,8 @@ const express = require('express');
 const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
 const connectDB = require('./config/database');
+const errorMiddleware = require('./middleware/error');
+
 //Route imports
 const product = require('./routes/producRoute');
 
@@ -13,11 +15,21 @@ dotenv.config({path:'config/config.env'});
 //Connect database
 connectDB(); 
 
+//Close the server if there are uncaught exceptions
+process.on('uncaughtException',(err)=>{
+    console.log(`Error: ${err.message}`);
+    console.log('Shutting down the server due to uncaught exception');
+    process.exit(1);
+})
+
 //Parse data into json format
 app.use(bodyParser.json());
 
 //Products route
 app.use('/',product);
+
+//Middleware for errors
+app.use(errorMiddleware);
 
 app.get('/',(req,res)=>{
     res.status(200).send("Welcome");
@@ -25,4 +37,13 @@ app.get('/',(req,res)=>{
 });
 
 const port = process.env.PORT || 8000;
-app.listen(port,()=>console.log(`Server running on port ${port}`));
+const server = app.listen(port,()=>console.log(`Server running on port ${port}`));
+
+//Close the server if there are unhandled promise rejections
+process.on('unhandledRejection',(err)=>{
+    console.log("Error:",err.message);
+    console.log("Shutting down the server due to unhandled promise rejections");
+    server.close(()=>{
+        process.exit(1);
+    })
+});
