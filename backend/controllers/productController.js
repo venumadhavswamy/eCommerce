@@ -1,10 +1,13 @@
 const Product = require('../models/Product');
 const ErrorHandler = require('../utils/errorHandler');
 const {catchAsyncError} = require('../middleware/catchAsyncErrors');
+const productQueries = require('../utils/productQueries');
 
 exports.getAllProducts = async (req,res,next)=>{
     catchAsyncError(async ()=>{
-        const products = await Product.find();
+        productQueries.getFilterQuery(req.query);
+        const query = productQueries.getSearchQuery(req.query.keyword);
+        const products = await Product.find(query);
         res.status(200).json({
             success:true,
             products: products
@@ -61,7 +64,7 @@ exports.deleteProduct = async (req,res,next)=>{
         }
     }
     catch(err){
-        next(new ErrorHandler("Bad request",400));
+        next(new ErrorHandler(err.message,400));
         //res.status(400).json({success:false,message:"Bad request",error:err});
     }
 }
@@ -78,7 +81,7 @@ exports.getProductDetails = async (req,res,next)=>{
         }
     }
     catch(err){
-        next(new ErrorHandler("Bad request",400));
+        next(new ErrorHandler(err.message,400));
         //res.status(400).json({success:false,message:"Bad request",error:err});
     }
 }
