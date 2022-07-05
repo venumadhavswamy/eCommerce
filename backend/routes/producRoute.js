@@ -4,11 +4,11 @@ const { getAllProducts, createProduct, updateProduct,
 const router = express.Router();
 
 //Route imports
-router.route('/products')
+router.route('/')
     .get(getAllProducts);
-router.route('/product/new')
+router.route('/new')
     .post(createProduct);
-router.route('/product/:id')
+router.route('/:id')
     .put(updateProduct)
     .delete(deleteProduct)
     .get(getProductDetails);

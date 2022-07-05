@@ -25,7 +25,7 @@ const productSchema = new mongoose.Schema({
         max:5,
         set: ()=>{
             let avg_rating = 0;
-            if(this.sum_of_reviews != NaN && this.num_of_reviews != NaN){
+            if(!isNaN(this.sum_of_reviews) && !isNaN(this.num_of_reviews)){
                 avg_rating = this.sum_of_reviews/this.num_of_reviews;
             }
             return avg_rating;

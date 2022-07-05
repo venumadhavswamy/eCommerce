@@ -5,14 +5,23 @@ const productQueries = require('../utils/productQueries');
 
 exports.getAllProducts = async (req,res,next)=>{
     catchAsyncError(async ()=>{
-        productQueries.getFilterQuery(req.query);
-        const query = productQueries.getSearchQuery(req.query.keyword);
-        const products = await Product.find(query);
+        const query = productQueries.getFilterQuery(req.query);
+        //const query = productQueries.getSearchQuery(req.query.keyword);
+        const productsPerPage = req.query.productsPerPage || 5;
+        const skipCount = getSkipCount(req.query.pageNumber, productsPerPage);
+        const totalProductsCount = await Product.count(query);
+        const products = await Product.find(query).skip(skipCount).limit(productsPerPage);
         res.status(200).json({
             success:true,
-            products: products
+            products: products,
+            productsCount: totalProductsCount
         });
     },req,res,next);
+}
+
+function getSkipCount(pageNumber,productsPerPage){
+    pageNumber = pageNumber || 1;
+    return (pageNumber-1)*productsPerPage;
 }
 
 //Create product access: Supplier(Admin)
@@ -26,7 +35,7 @@ exports.createProduct = async (req,res,next)=>{
         });
     }
     catch(err){
-        next(new ErrorHandler("Bad request",400));
+        next(new ErrorHandler(err.message,400));
         //res.status(400).json({success:false,message:"Bad request",error:err});
     }
 }

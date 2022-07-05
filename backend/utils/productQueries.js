@@ -7,22 +7,20 @@ exports.getSearchQuery = (keyword)=>{
     }
     else{
         query = {
-            name:{//Search in name field
-                $regex:keyword,
-                $options:"i",
+            //Search in name field
+            name:{
+                $regex:keyword,$options:"i",
             }
         }
     }
     return query;
 }
 
-
-exports.getFilterQuery = (queryParams)=>{
-    console.log(queryParams);//gt,lt,gte,lte are without $
-    queryParams = JSON.stringify(queryParams);
-    console.log(queryParams);
+exports.getFilterQuery = (query)=>{
+    console.log(query);//gt,lt,gte,lte are without $
+    query = JSON.stringify(query);
     //Replace gt,lt,gte,lte with $gt,$lt,$gte,$lte
-    queryParams = queryParams.replace(/\b(gt|lt|gte|lte)\b/g,(val)=>{return ('$'+val);});
-    console.log(queryParams);
-
+    query = query.replace(/\b(gt|lt|gte|lte)\b/g,(val)=>{return ('$'+val);});
+    query = JSON.parse(query);
+    return query;
 }

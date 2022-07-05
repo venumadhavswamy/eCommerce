@@ -5,7 +5,8 @@ const connectDB = require('./config/database');
 const errorMiddleware = require('./middleware/error');
 
 //Route imports
-const product = require('./routes/producRoute');
+const productRoute = require('./routes/producRoute');
+const userRoute = require('./routes/userRoute');
 
 const app = express();
 
@@ -25,8 +26,9 @@ process.on('uncaughtException',(err)=>{
 //Parse data into json format
 app.use(bodyParser.json());
 
-//Products route
-app.use('/',product);
+//Using routes
+app.use('/product',productRoute);
+app.use('/user',userRoute);
 
 //Middleware for errors
 app.use(errorMiddleware);
