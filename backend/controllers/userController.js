@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const ErrorHandler = require('../utils/errorHandler');
+const jwtTokenHandler = require('../utils/jwtTokenHandler');
 
 exports.getUserDetails = async (req,res,next)=>{
     try{
@@ -24,11 +25,37 @@ exports.registerUser = async (req,res,next)=>{
                 url:"sample url"
             }
         });
-        console.log(typeof(user),user);
-        res.status(201).json({user,success:true});
+
+        jwtTokenHandler.sendResponseWithToken(user,201,res);
     }
     catch(err){
         console.log(err.stack);
         next(new ErrorHandler(err.message,400));
     }
+}
+
+exports.loginUser = async(req,res,next)=>{
+    const {email, password} = req.body;
+    if(!email && !password){
+        return next(new ErrorHandler("Please enter email and password",400));
+    }
+    try{
+        const user = await User.findOne({email:email}).select("+password");
+        if(!user){
+            return next(new ErrorHandler("Invalid email or password",401));
+        }
+        const isPasswordMatched = await user.isValidPassword(password);
+        if(!isPasswordMatched){
+            return next(new ErrorHandler("Invalid email or password",401));
+        }
+
+        jwtTokenHandler.sendResponseWithToken(user,200,res);
+    }
+    catch(err){
+        next(new ErrorHandler(err.message,400));
+    }
+}
+
+exports.logoutUser = async(req,res,next)=>{
+    
 }

@@ -3,10 +3,12 @@ const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
 const connectDB = require('./config/database');
 const errorMiddleware = require('./middleware/error');
+const cookieParser = require('cookie-parser');
 
 //Route imports
 const productRoute = require('./routes/producRoute');
 const userRoute = require('./routes/userRoute');
+
 
 const app = express();
 
@@ -25,6 +27,8 @@ process.on('uncaughtException',(err)=>{
 
 //Parse data into json format
 app.use(bodyParser.json());
+
+app.use(cookieParser());
 
 //Using routes
 app.use('/product',productRoute);

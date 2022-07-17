@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const bcrypt = require('bcryptjs');
+const jwt = require("jsonwebtoken");
 
 const UserSchema = new mongoose.Schema({
     name:{
@@ -32,19 +34,8 @@ const UserSchema = new mongoose.Schema({
     },
     role:{
         type: String,
+        enum: ["user","supplier"],
         default: "user"
-    },
-    createdOn:{
-        type: Date,
-        default: Date.now,
-        set: (createdOn)=>{
-            console.log("in set");
-            if(!this.updatedOn){
-                console.log("in created on");
-                return Date.now
-            }
-            return createdOn;
-        }
     },
     updatedOn:{
         type: Date,
@@ -53,5 +44,25 @@ const UserSchema = new mongoose.Schema({
     resetPasswordToken: String,
     resetPasswordExpire: Date
 });
+
+UserSchema.pre("save",async function(next){
+    //Run this function only when password was modified, not on other update functions
+    if(this.isModified('password')){
+        const hashedPassword = await bcrypt.hash(this.password,10);
+        this.set({password: hashedPassword});
+    }
+    next();
+});
+
+
+UserSchema.methods.getJWTToken = function (){
+    return jwt.sign({id:this._id},process.env.JWT_SECRET_KEY, {
+        expiresIn: process.env.JWT_EXPIRES_IN,
+    });
+}
+
+UserSchema.methods.isValidPassword = async function(enteredPassword){
+    return bcrypt.compare(enteredPassword,this.password);
+}
 
 module.exports = mongoose.model("user",UserSchema);
